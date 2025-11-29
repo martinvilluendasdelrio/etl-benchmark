@@ -58,12 +58,16 @@ Cada script de `src/` contiene un proceso ETL específico:
 
 - `etl_pandas.py` → Procesos usando **Pandas**.  
 - `etl_polars.py` → Procesos usando **Polars**.  
-- `etl_pyspark.py` → Procesos usando **PySpark**.  
+- `etl_pyspark.py` → Procesos usando **PySpark**.
+
+Además se encuentra el script pricipal para la ejecución de los procesos ETL:
+
+- `benchmark.py` → Ejecución de los procesos ETL.
 
 Puedes ejecutar cada script desde la terminal con el entorno virtual activado:
 
 ```powershell
-python src/etl_pandas.py
+python src/benchmark.py
 ```
 
 ---
