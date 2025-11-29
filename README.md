@@ -16,13 +16,19 @@ El proyecto está pensado para:
 etl-benchmark/
 │
 ├── .venv/                  # Entorno virtual (no subido a GitHub)
-├── src/                    # Scripts ETL
+├── src/                    # Scripts ETL y benchmark
 │   ├── etl_pandas.py
 │   ├── etl_polars.py
-│   └── etl_pyspark.py
+│   ├── etl_pyspark.py
+|   └── benchmark.py
 │
-├── data/                   # Datasets de prueba
+├── data/                   # Datasets de prueba (no subido a GitHub) 
+|   |── processed/
+|   └── raw/                # Dataset inicial -> Dataset utilizado: TLC Trip Record Data 12/2022
 ├── utils/                  # Funciones auxiliares
+|   |── timer.py
+|   |── memory.py
+|   └── __init__.py
 ├── README.md
 └── requirements.txt        # Dependencias del proyecto
 ```
