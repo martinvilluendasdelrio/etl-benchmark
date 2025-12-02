@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 from utils.memory import measure_memory
 from utils.timer import measure_time
 
