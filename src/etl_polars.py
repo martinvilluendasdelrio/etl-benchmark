@@ -77,3 +77,15 @@ def write_data(df, output_path):
 @measure_time
 def run_etl_polars(input_path: str, output_path:str, critical_columns=None):
     critical_columns = critical_columns or DEFAULT_CRITICAL_COLUMNS
+
+    #Use read_data function (returns DataFrame)
+    df = read_data(input_path)
+    #Use clean_data funcition (returns DataFrame)
+    df_clean = clean_data(df, critical_columns)
+    #Use filter_data function (returns DataFrame)
+    df_filtered = filter_data(df_clean)
+    #Use group_data function (returns DataFrame)
+    grouped = group_sort_dataframe(df_filtered)
+    #Use write_dataframe (returns DataFrame)
+    write_data(grouped, output_path)
+    grouped.head(100)
