@@ -1,21 +1,28 @@
+import sys
+from pathlib import Path
+import statistics
+
+# Añadir raíz del proyecto al path
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
+
 from etl_pandas import run_etl_pandas
 from etl_polars import run_etl_polars
 from etl_pyspark import run_etl_pyspark
-import statistics
 
-READ_PATH = "../data/raw/yellow_tripdata_2022-12.parquet"
-WRITE_PATH = "../data/processed/"
-
+# Rutas absolutas de lectura/escritura
+READ_PATH = PROJECT_ROOT / "data" / "raw" / "yellow_tripdata_2022-12.parquet"
+WRITE_DIR = PROJECT_ROOT / "data" / "processed"
 
 # Número de repeticiones de cada ETL
 N_REPEATS = 5
 
-# Lista de ETLs a testear
 ETL_ENGINES = [
     ("pandas", run_etl_pandas, "output_pandas.parquet"),
     ("polars", run_etl_polars, "output_polars.parquet"),
     ("pyspark", run_etl_pyspark, "output_spark.parquet"),
 ]
+
 def run_benchmark():
     results_summary = []
 
@@ -27,18 +34,19 @@ def run_benchmark():
 
         for i in range(N_REPEATS):
             print(f"Run {i+1}/{N_REPEATS}...")
+            output_path = WRITE_DIR / output_file
             _, t, m = run_func(
                 str(READ_PATH),
-                str(WRITE_PATH / output_file)
+                str(output_path)
             )
             times.append(t)
             memories.append(m)
 
         # Calculamos media y desviación estándar
         mean_time = statistics.mean(times)
-        std_time = statistics.stdev(times)
+        std_time = statistics.stdev(times) if len(times) > 1 else 0
         mean_mem = statistics.mean(memories)
-        std_mem = statistics.stdev(memories)
+        std_mem = statistics.stdev(memories) if len(memories) > 1 else 0
 
         results_summary.append({
             "engine": engine_name,
