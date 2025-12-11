@@ -35,7 +35,7 @@ def run_benchmark():
         for i in range(N_REPEATS):
             print(f"Run {i+1}/{N_REPEATS}...")
             output_path = WRITE_DIR / output_file
-            _, t, m = run_func(
+            result, t, m = run_func(
                 str(READ_PATH),
                 str(output_path)
             )

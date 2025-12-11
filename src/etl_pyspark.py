@@ -1,8 +1,7 @@
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as f
 from pyspark.sql.types import *
-from utils.memory import measure_memory
-from utils.timer import measure_time
+from utils.measure import measure_time_and_memory
 
 DEFAULT_CRITICAL_COLUMNS = ['fare_amount', 'trip_distance', 'trip_duration_min']
 CAST_COLUMNS = {'passenger_count': {'dtype': 'int', 'valid_range': (1, 9)}, 'RatecodeID': {'dtype': 'int', 'valid_range': (1, 6)}}
@@ -68,8 +67,7 @@ def write_data(df, output_path):
     df.write.parquet(output_path, mode='overwrite')
 
 #run_pyspark_etl
-@measure_memory
-@measure_time
+@measure_time_and_memory
 def run_etl_pyspark(input_path: str, output_path: str, critical_columns=None):
     critical_columns = critical_columns or DEFAULT_CRITICAL_COLUMNS 
 
@@ -84,3 +82,4 @@ def run_etl_pyspark(input_path: str, output_path: str, critical_columns=None):
     #Use write_dataframe (returns DataFrame)
     write_data(grouped, output_path)
     grouped.show(100, True)
+    return grouped

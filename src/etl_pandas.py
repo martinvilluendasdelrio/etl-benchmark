@@ -1,6 +1,5 @@
 import pandas as pd
-from utils.memory import measure_memory
-from utils.timer import measure_time
+from utils.measure import measure_time_and_memory
 
 
 DEFAULT_CRITICAL_COLUMNS = ['fare_amount', 'trip_distance', 'trip_duration_min']
@@ -34,7 +33,7 @@ def clean_data(df, critical_columns):
     df['avg_speed_mph'] = df['trip_distance'] / (df['trip_duration_min'] / 60 + 1e-6)
 
     #Drop na in critical columns
-    df = df.drop_na(subset=critical_columns)
+    df = df.dropna(subset=critical_columns)
 
     return df
 
@@ -65,8 +64,7 @@ def write_data(df, output_path):
     df.to_parquet(output_path, index=False)
 
 #run_pandas_etl
-@measure_memory
-@measure_time
+@measure_time_and_memory
 def run_etl_pandas(input_path: str, output_path: str, critical_columns=None):
     critical_columns = critical_columns or DEFAULT_CRITICAL_COLUMNS
 
@@ -81,3 +79,4 @@ def run_etl_pandas(input_path: str, output_path: str, critical_columns=None):
     #Use write_dataframe (returns DataFrame)
     write_data(grouped, output_path)
     grouped.head(100)
+    return grouped
