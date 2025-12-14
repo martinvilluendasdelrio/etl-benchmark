@@ -3,7 +3,13 @@ from pyspark.sql import functions as f
 from pyspark.sql.types import *
 from utils.measure import measure_time_and_memory
 
-DEFAULT_CRITICAL_COLUMNS = ['fare_amount', 'trip_distance', 'trip_duration_min']
+DEFAULT_CRITICAL_COLUMNS =[
+    "VendorID",
+    "tpep_pickup_datetime",
+    "tpep_dropoff_datetime",
+    "trip_distance",
+    "total_amount"
+]
 CAST_COLUMNS = {'passenger_count': {'dtype': 'int', 'valid_range': (1, 9)}, 'RatecodeID': {'dtype': 'int', 'valid_range': (1, 6)}}
 
 spark = SparkSession.builder.getOrCreate()
@@ -15,14 +21,21 @@ def read_data(path):
 
 #Clean data
 def clean_data(df, critical_columns):
-    values_to_replace = [False, 'false', 'False']
-    #Replace False value
-    for c in df.columns:
-        df = df.withColumn(c, f.when(f.col(c).isin(values_to_replace), None).otherwise(f.col(c)))
-    #Drop duplicates
-    df = df.distinct()
-    #Drop columns with nulls in all columns
-    df = df.na.drop(how='all')
+    values_to_replace = ["false", "False"]
+
+    for field in df.schema.fields:
+        if isinstance(field.dataType, StringType):
+            c = field.name
+            df = df.withColumn(
+                c,
+                f.when(
+                    f.lower(f.col(c)).isin(values_to_replace),
+                    None
+                ).otherwise(f.col(c))
+            )
+
+    df = df.dropDuplicates()
+    df = df.dropna(how="all")
 
     #Casts comprobations
     for col_name, props in CAST_COLUMNS.items():
@@ -37,7 +50,7 @@ def clean_data(df, critical_columns):
     )
     df = df.withColumn('avg_speed_mph', f.col('trip_distance') / (f.col('trip_duration_min')) / 60 + 1e-6)
 
-    df = df.na.drop(subset=critical_columns)
+    df = df.dropna(subset=critical_columns)
 
     return df
 
